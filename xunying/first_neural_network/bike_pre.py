@@ -127,6 +127,7 @@ class NeuralNetwork(object):
 def MSE(y, Y):
     return np.mean((y - Y) ** 2)
 
+
 """
 #######################################################################################
 
@@ -188,15 +189,19 @@ unittest.TextTestRunner().run(suit)
 import sys
 
 iterations = 1000
-learning_rate = 0.05
-hidden_nodes = 2
+learning_rate = 0.0001
+hidden_nodes = 200
 output_nodes = 1
 
 N_i = training_features.shape[1]
 network = NeuralNetwork(N_i, hidden_nodes, output_nodes, learning_rate)
-
+train_loss = 100
+val_loss = 100
+ii = 0
 losses = {'train': [], 'validation': []}
-for ii in range(iterations):
+while val_loss > 0.2:
+    ii += 1
+    # for ii in range(iterations):
     # Go through a random batch od 128 records from the training data set
     batch = np.random.choice(training_features.index, size=128)
     X, y = training_features.ix[batch].values, training_targets.ix[batch]['cnt']
@@ -204,11 +209,11 @@ for ii in range(iterations):
 
     # 输出训练过程
     train_loss = MSE(network.run(training_features).T, training_targets['cnt'].values)
-    print(network.run(val_features).shape, val_targets['cnt'].values.shape)
     val_loss = MSE(network.run(val_features).T, val_targets['cnt'].values)
-    print(str(val_loss)[:5], str(train_loss)[:5])
-    print("Progress:%2.1f%%...training loss:%s...validation loss%s" % ((100 * ii / float(iterations)), str(
+    print("Progress:%2.1f...training loss:%s...validation loss%s" % (ii, str(
         train_loss)[:5], str(val_loss)[:5]))
+    # print("Progress:%2.1f%%...training loss:%s...validation loss%s" % ((100 * ii / float(iterations)), str(
+    # train_loss)[:5], str(val_loss)[:5]))
 
     losses['train'].append(train_loss)
     losses['validation'].append(val_loss)
@@ -219,3 +224,6 @@ plt.legend()
 _ = plt.ylim()
 plt.show()
 
+### test
+test_loss = MSE(network.run(test_features).T, test_targets['cnt'].values)
+print("test_loss:%s" % test_loss)
